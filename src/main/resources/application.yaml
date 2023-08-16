@@ -1,0 +1,4 @@
+spring:
+  elasticsearch:
+    rest:
+      uris: vm.local:9200
