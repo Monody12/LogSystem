@@ -1,4 +1,4 @@
-package com.example.logsystem.pojo
+package com.example.logsystem.entity
 
 import org.springframework.data.annotation.Id
 import org.springframework.data.elasticsearch.annotations.DateFormat
@@ -10,28 +10,28 @@ import java.time.LocalDateTime
 /**
  * Logstash日志
  * 格式示例：
- * {
- *         "_index" : "logstash-2023.08.16",
+ *       {
+ *         "_index" : "logstash-index",
  *         "_type" : "_doc",
- *         "_id" : "tus7_IkBdVYhesXVNYoU",
- *         "_score" : 1.0657513,
+ *         "_id" : "bScPF4oB9pvw7coGFaxX",
+ *         "_score" : 1.0,
  *         "_source" : {
  *           "@version" : "1",
- *           "class" : "org.apache.catalina.core.StandardEngine",
- *           "pid" : "5017",
- *           "rest" : "Starting Servlet engine: [Apache Tomcat/9.0.75]",
- *           "port" : 37879,
- *           "serviceName" : "springAppName_IS_UNDEFINED",
+ *           "serviceName" : "server-manager",
  *           "host" : "103.177.44.43",
- *           "@timestamp" : "2023-08-16T02:44:45.753Z",
  *           "thread" : "restartedMain",
- *           "logLevel" : "INFO"
+ *           "pid" : "23619",
+ *           "class" : "org.apache.catalina.core.StandardEngine",
+ *           "logLevel" : "INFO",
+ *           "stackTrace" : "",
+ *           "traceId" : "",
+ *           "port" : 38601,
+ *           "message" : "Starting Servlet engine: [Apache Tomcat/9.0.75]",
+ *           "@timestamp" : "2023-08-21T07:46:18.719Z"
  *         }
- *       },
  */
-//@Document(indexName = "logstash_*", shards = 1, replicas = 1)
-@Document(indexName = "logstash-2023.08.16", shards = 1, replicas = 1)
-data class LogPojo(
+@Document(indexName = "logstash-index", shards = 1, replicas = 1)
+data class LogDocument(
     @Id
     val id: String? = null,
     @Field(name = "@version", type = FieldType.Keyword)
@@ -52,4 +52,9 @@ data class LogPojo(
     val thread: String? = null,
     @Field(type = FieldType.Keyword)
     val logLevel: String? = null,
+    // TODO 事件消息，未来引入分词器使其可以模糊查询
+    @Field(type = FieldType.Keyword)
+    val message:String?=null,
+    @Field(type = FieldType.Keyword)
+    val traceId:String?=null,
 )

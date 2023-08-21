@@ -1,7 +1,7 @@
 package com.example.logsystem.service
 
-import com.example.logsystem.pojo.LogPojo
+import com.example.logsystem.entity.LogDocument
 
 interface LogService {
-    fun selectPage(page: Int, size: Int): List<LogPojo>
+    fun selectPage(page: Int, size: Int): List<LogDocument>
 }

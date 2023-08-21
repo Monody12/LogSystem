@@ -1,4 +1,6 @@
 spring:
+  application:
+    name: log-system
   elasticsearch:
     rest:
       uris: vm.local:9200

@@ -1,6 +1,6 @@
 package com.example.logsystem.controller
 
-import com.example.logsystem.pojo.LogPojo
+import com.example.logsystem.entity.LogDocument
 import com.example.logsystem.service.LogService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.GetMapping
@@ -12,7 +12,7 @@ class LogController {
     lateinit var logService: LogService
 
     @GetMapping("/log")
-    fun selectPage(page: Int, size: Int): List<LogPojo> {
+    fun selectPage(page: Int, size: Int): List<LogDocument> {
         return logService.selectPage(page, size)
     }
 
