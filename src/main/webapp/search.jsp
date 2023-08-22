@@ -26,7 +26,7 @@
 
 <h2>Search Results</h2>
 <c:if test="${not empty results}">
-  <table>
+  <table border="1">
     <tr>
       <th>Timestamp</th>
       <th>Level</th>

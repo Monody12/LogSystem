@@ -1,46 +1,20 @@
 package com.example.logsystem.service
 
 import com.example.logsystem.entity.LogDocument
+import org.elasticsearch.index.query.BoolQueryBuilder
+import org.elasticsearch.index.query.QueryBuilders
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
+import org.springframework.data.elasticsearch.core.query.NativeSearchQueryBuilder
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate
+import org.springframework.data.elasticsearch.core.SearchHit
+import org.springframework.data.elasticsearch.core.SearchHits
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class LogDocumentService(private val repository: LogDocumentRepository) {
-
-//    fun search(
-//        startDate: LocalDateTime?,
-//        endDate: LocalDateTime?,
-//        level: String?,
-//        traceId: String?,
-//        className: String?,
-//        message: String?
-//    ): List<LogDocument> {
-//        var result: List<LogDocument> = mutableListOf()
-//
-//        if (startDate != null && endDate != null) {
-//            result = repository.findByTimestampBetween(startDate, endDate)
-//        }
-//
-//        if (level != null) {
-//            result = result.filter { it.logLevel == level }
-//        }
-//
-//        if (traceId != null) {
-//            result = result.filter { it.traceId == traceId }
-//        }
-//
-//        if (className != null) {
-//            result = result.filter { it.class_?.contains(className) ?: false }
-//        }
-//
-//        if (message != null) {
-//            result = result.filter { it.message?.contains(message) ?: false }
-//        }
-//
-//        return result
-//    }
+class LogDocumentService(private val repository: LogDocumentRepository, private val elasticsearchTemplate: ElasticsearchRestTemplate) {
 
     fun search(
         startDate: LocalDateTime?,
@@ -53,29 +27,37 @@ class LogDocumentService(private val repository: LogDocumentRepository) {
         pageSize: Int
     ): Page<LogDocument> {
         val pageable = PageRequest.of(pageNumber, pageSize)
-
-        var result: Page<LogDocument> = repository.findAll(pageable)
+        val qb = BoolQueryBuilder()
 
         if (startDate != null && endDate != null) {
-            result = repository.findByTimestampBetween(startDate, endDate, pageable)
+            qb.must(QueryBuilders.rangeQuery("timestamp").gte(startDate).lte(endDate))
         }
 
-        if (level != null) {
-            result = repository.findByLevel(level, pageable)
+        if (!level.isNullOrBlank()) {
+            qb.must(QueryBuilders.matchQuery("logLevel", level))
         }
 
-        if (traceId != null) {
-            result = repository.findByTraceId(traceId, pageable)
+        if (!traceId.isNullOrBlank()) {
+            qb.must(QueryBuilders.matchQuery("traceId", traceId))
         }
 
-        if (className != null) {
-            result = repository.findByClassNameContaining(className, pageable)
+        if (!className.isNullOrBlank()) {
+            qb.must(QueryBuilders.matchQuery("class", className))
         }
 
-        if (message != null) {
-            result = repository.findByMessageContaining(message, pageable)
+        if (!message.isNullOrBlank()) {
+            qb.must(QueryBuilders.matchQuery("message", message))
         }
 
-        return result
+        val query = NativeSearchQueryBuilder()
+            .withQuery(qb)
+            .withPageable(pageable)
+            .build()
+
+        val searchHits: SearchHits<LogDocument> = elasticsearchTemplate.search(query, LogDocument::class.java)
+
+        val searchHitsList: List<SearchHit<LogDocument>> = searchHits.searchHits.toList()
+
+        return PageImpl<LogDocument>(searchHitsList.map { it.content }, pageable, searchHits.totalHits)
     }
 }

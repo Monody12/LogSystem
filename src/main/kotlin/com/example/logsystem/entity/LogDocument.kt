@@ -36,7 +36,7 @@ data class LogDocument(
     val id: String? = null,
     @Field(name = "@version", type = FieldType.Keyword)
     val version: String? = null,
-    @Field(name = "_class",type = FieldType.Keyword)
+    @Field(name = "class",type = FieldType.Keyword)
     val class_: String? = null,
     @Field(type = FieldType.Keyword)
     val pid: String? = null,
