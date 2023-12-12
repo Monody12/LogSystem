@@ -36,7 +36,7 @@ data class LogDocument(
     val id: String? = null,
     @Field(name = "@version", type = FieldType.Keyword)
     val version: String? = null,
-    @Field(name = "class",type = FieldType.Keyword)
+    @Field(name = "class",type = FieldType.Text, analyzer = "ik_max_word")
     val class_: String? = null,
     @Field(type = FieldType.Keyword)
     val pid: String? = null,
@@ -53,7 +53,7 @@ data class LogDocument(
     @Field(type = FieldType.Keyword)
     val logLevel: String? = null,
     // TODO 事件消息，未来引入分词器使其可以模糊查询
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Text, analyzer = "ik_max_word")
     val message:String?=null,
     @Field(type = FieldType.Keyword)
     val traceId:String?=null,
