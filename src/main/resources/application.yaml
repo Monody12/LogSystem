@@ -3,4 +3,4 @@ spring:
     name: log-system
   elasticsearch:
     rest:
-      uris: vm.local:9200
+      uris: vps.dluserver.cn:9200
