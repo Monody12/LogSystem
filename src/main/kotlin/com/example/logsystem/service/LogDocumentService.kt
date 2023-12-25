@@ -3,6 +3,8 @@ package com.example.logsystem.service
 import com.example.logsystem.entity.LogDocument
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
+import org.elasticsearch.search.sort.SortBuilders
+import org.elasticsearch.search.sort.SortOrder
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.PageRequest
@@ -52,6 +54,8 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         val query = NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
+            // 查询结果按时间戳升序排序
+            .withSort(SortBuilders.fieldSort("@timestamp").order(SortOrder.ASC))
             .build()
 
         val searchHits: SearchHits<LogDocument> = elasticsearchTemplate.search(query, LogDocument::class.java)
