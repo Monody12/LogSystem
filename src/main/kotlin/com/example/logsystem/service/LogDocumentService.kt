@@ -1,6 +1,7 @@
 package com.example.logsystem.service
 
 import com.example.logsystem.entity.LogDocument
+import org.elasticsearch.common.unit.Fuzziness
 import org.elasticsearch.index.query.BoolQueryBuilder
 import org.elasticsearch.index.query.QueryBuilders
 import org.elasticsearch.search.sort.SortBuilders
@@ -44,11 +45,11 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         }
 
         if (!className.isNullOrBlank()) {
-            qb.must(QueryBuilders.matchQuery("class", className))
+            qb.must(QueryBuilders.matchQuery("class", className).fuzziness(Fuzziness.AUTO))
         }
 
         if (!message.isNullOrBlank()) {
-            qb.must(QueryBuilders.matchQuery("message", message))
+            qb.must(QueryBuilders.matchQuery("message", message).fuzziness(Fuzziness.AUTO))
         }
 
         val query = NativeSearchQueryBuilder()
