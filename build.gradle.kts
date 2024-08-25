@@ -5,6 +5,7 @@ plugins {
     id("io.spring.dependency-management") version "1.1.2"
     kotlin("jvm") version "1.8.22"
     kotlin("plugin.spring") version "1.8.22"
+    war
 }
 
 group = "com.example"
@@ -49,3 +50,27 @@ tasks.withType<KotlinCompile> {
 tasks.withType<Test> {
     useJUnitPlatform()
 }
+
+task("printProjectProperties") {
+    doLast {
+        project.properties.forEach { (key, value) ->
+            println("$key = $value")
+        }
+    }
+}
+
+/**
+ * 记录所有源码文件和文件夹的路径
+ */
+task("getAllSourceFiles") {
+    doLast {
+        val file = file("sourceList.txt")
+        sourceSets.forEach { sourceSet ->
+            println("sourceSet: ${sourceSet.name}")
+            sourceSet.allSource.forEach { sourceDirectory ->
+//                println("sourceDirectory: ${sourceDirectory.path}")
+                file.appendText("${sourceDirectory.path}\n")
+            }
+        }
+    }
+}.dependsOn("printProjectProperties")
