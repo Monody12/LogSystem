@@ -1,0 +1,12 @@
+version: '3'
+services:
+  myapp:
+    image: log-system
+    ports:
+      - "8090:8080"
+    networks:
+      - elk-network
+
+networks:
+  elk-network:
+    external: true
