@@ -10,13 +10,9 @@ import java.time.LocalDateTime
 @Controller
 class LogDocumentController(private val logDocumentService: LogDocumentService) {
 
-    @GetMapping("/search.jsp")
-    fun searchJsp(): String {
-        return "search.jsp"
-    }
-
     @GetMapping("/search")
     fun search(
+        @RequestParam(required = false) serviceName: String?,
         @RequestParam(required = false) startDate: LocalDateTime?,
         @RequestParam(required = false) endDate: LocalDateTime?,
         @RequestParam(required = false) level: String?,
@@ -27,8 +23,9 @@ class LogDocumentController(private val logDocumentService: LogDocumentService) 
         @RequestParam(defaultValue = "50") pageSize: Int,
         model: Model
     ): String {
-        val results = logDocumentService.search(startDate, endDate, level, traceId, className, message, pageNumber, pageSize)
+        val results = logDocumentService.search(serviceName, startDate, endDate, level, traceId, className, message, pageNumber, pageSize)
         model.addAttribute("results", results)
+        model.addAttribute("serviceName", serviceName)
         model.addAttribute("startDate", startDate)
         model.addAttribute("endDate", endDate)
         model.addAttribute("level", level)

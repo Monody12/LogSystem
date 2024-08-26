@@ -20,6 +20,7 @@ import java.time.LocalDateTime
 class LogDocumentService(private val repository: LogDocumentRepository, private val elasticsearchTemplate: ElasticsearchRestTemplate) {
 
     fun search(
+        serviceName: String?,
         startDate: LocalDateTime?,
         endDate: LocalDateTime?,
         level: String?,
@@ -31,6 +32,10 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
     ): Page<LogDocument> {
         val pageable = PageRequest.of(pageNumber, pageSize)
         val qb = BoolQueryBuilder()
+
+        if (!serviceName.isNullOrBlank()) {
+            qb.must(QueryBuilders.matchQuery("serviceName", serviceName))
+        }
 
         if (startDate != null && endDate != null) {
             qb.must(QueryBuilders.rangeQuery("timestamp").gte(startDate).lte(endDate))
