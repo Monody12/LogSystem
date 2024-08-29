@@ -37,8 +37,12 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
             qb.must(QueryBuilders.matchQuery("serviceName", serviceName))
         }
 
-        if (startDate != null && endDate != null) {
-            qb.must(QueryBuilders.rangeQuery("timestamp").gte(startDate).lte(endDate))
+        // 修改时间范围查询逻辑
+        if (startDate != null || endDate != null) {
+            val rangeQuery = QueryBuilders.rangeQuery("@timestamp")
+            startDate?.let { rangeQuery.gte(it) }
+            endDate?.let { rangeQuery.lte(it) }
+            qb.must(rangeQuery)
         }
 
         if (!level.isNullOrBlank()) {
@@ -50,7 +54,7 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         }
 
         if (!className.isNullOrBlank()) {
-            qb.must(QueryBuilders.matchQuery("class", className).fuzziness(Fuzziness.AUTO))
+            qb.must(QueryBuilders.matchQuery("className", className).fuzziness(Fuzziness.AUTO))
         }
 
         if (!message.isNullOrBlank()) {
@@ -60,7 +64,6 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         val query = NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
-            // 查询结果按时间戳升序排序
             .withSort(SortBuilders.fieldSort("@timestamp").order(SortOrder.ASC))
             .build()
 
@@ -68,6 +71,6 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
 
         val searchHitsList: List<SearchHit<LogDocument>> = searchHits.searchHits.toList()
 
-        return PageImpl<LogDocument>(searchHitsList.map { it.content }, pageable, searchHits.totalHits)
+        return PageImpl(searchHitsList.map { it.content }, pageable, searchHits.totalHits)
     }
 }

@@ -15,6 +15,7 @@
 <form method="get" action="${pageContext.request.contextPath}/search">
   Start Date: <input type="datetime-local" name="startDate" value="${startDate}"><br>
   End Date: <input type="datetime-local" name="endDate" value="${endDate}"><br>
+  Service Name<input type="text" name="serviceName" value="${serviceName}"><br>
   Level: <input type="text" name="level" value="${level}"><br>
   Trace ID: <input type="text" name="traceId" value="${traceId}"><br>
   Class Name: <input type="text" name="className" value="${className}"><br>
@@ -28,6 +29,7 @@
 <c:if test="${not empty results}">
   <table border="1">
     <tr>
+      <th>Service Name</th>
       <th>Timestamp</th>
       <th>Level</th>
       <th>Trace ID</th>
@@ -36,6 +38,7 @@
     </tr>
     <c:forEach items="${results.content}" var="result">
       <tr>
+        <td>${result.serviceName}</td>
         <td>${result.timestamp}</td>
         <td>${result.logLevel}</td>
         <td>${result.traceId}</td>
