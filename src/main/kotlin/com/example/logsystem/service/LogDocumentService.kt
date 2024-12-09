@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 
 @Service
-class LogDocumentService(private val repository: LogDocumentRepository, private val elasticsearchTemplate: ElasticsearchRestTemplate) {
+class LogDocumentService(private val elasticsearchTemplate: ElasticsearchRestTemplate) {
 
     fun search(
         serviceName: String?,
@@ -28,16 +28,19 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         className: String?,
         message: String?,
         pageNumber: Int,
-        pageSize: Int
+        pageSize: Int,
+        sortOrder: String
     ): Page<LogDocument> {
+        // 设置分页参数
         val pageable = PageRequest.of(pageNumber, pageSize)
         val qb = BoolQueryBuilder()
 
+        // 添加服务名称查询条件
         if (!serviceName.isNullOrBlank()) {
             qb.must(QueryBuilders.matchQuery("serviceName", serviceName))
         }
 
-        // 修改时间范围查询逻辑
+        // 添加时间范围查询条件
         if (startDate != null || endDate != null) {
             val rangeQuery = QueryBuilders.rangeQuery("@timestamp")
             startDate?.let { rangeQuery.gte(it) }
@@ -45,30 +48,41 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
             qb.must(rangeQuery)
         }
 
+        // 添加日志级别查询条件
         if (!level.isNullOrBlank()) {
             qb.must(QueryBuilders.matchQuery("logLevel", level))
         }
 
+        // 添加 Trace ID 查询条件
         if (!traceId.isNullOrBlank()) {
             qb.must(QueryBuilders.matchQuery("traceId", traceId))
         }
 
+        // 添加类名查询条件
         if (!className.isNullOrBlank()) {
             qb.must(QueryBuilders.matchQuery("className", className).fuzziness(Fuzziness.AUTO))
         }
 
+        // 添加消息内容查询条件
         if (!message.isNullOrBlank()) {
             qb.must(QueryBuilders.matchQuery("message", message).fuzziness(Fuzziness.AUTO))
         }
 
+        // 确定排序方式，默认升序
+        val sort = SortBuilders.fieldSort("@timestamp")
+            .order(if (sortOrder.equals("desc", ignoreCase = true)) SortOrder.DESC else SortOrder.ASC)
+
+        // 构建查询对象
         val query = NativeSearchQueryBuilder()
             .withQuery(qb)
             .withPageable(pageable)
-            .withSort(SortBuilders.fieldSort("@timestamp").order(SortOrder.ASC))
+            .withSort(sort) // 动态设置排序参数
             .build()
 
+        // 执行查询
         val searchHits: SearchHits<LogDocument> = elasticsearchTemplate.search(query, LogDocument::class.java)
 
+        // 将查询结果转换为分页对象
         val searchHitsList: List<SearchHit<LogDocument>> = searchHits.searchHits.toList()
 
         return PageImpl(searchHitsList.map { it.content }, pageable, searchHits.totalHits)

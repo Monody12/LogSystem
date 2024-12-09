@@ -21,9 +21,11 @@ class LogDocumentController(private val logDocumentService: LogDocumentService) 
         @RequestParam(required = false) message: String?,
         @RequestParam(defaultValue = "0") pageNumber: Int,
         @RequestParam(defaultValue = "50") pageSize: Int,
+        @RequestParam(defaultValue = "asc") sortOrder: String,
         model: Model
     ): String {
-        val results = logDocumentService.search(serviceName, startDate, endDate, level, traceId, className, message, pageNumber, pageSize)
+        val results = logDocumentService.search(serviceName, startDate, endDate, level, traceId, className, message,
+            pageNumber, pageSize, sortOrder)
         model.addAttribute("results", results)
         model.addAttribute("serviceName", serviceName)
         model.addAttribute("startDate", startDate)
@@ -34,6 +36,7 @@ class LogDocumentController(private val logDocumentService: LogDocumentService) 
         model.addAttribute("message", message)
         model.addAttribute("pageNumber", pageNumber)
         model.addAttribute("pageSize", pageSize)
+        model.addAttribute("sortOrder", sortOrder)
         return "search.jsp"
     }
 }

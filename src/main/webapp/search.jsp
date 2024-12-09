@@ -15,14 +15,20 @@
 <form method="get" action="${pageContext.request.contextPath}/search">
   Start Date: <input type="datetime-local" name="startDate" value="${startDate}"><br>
   End Date: <input type="datetime-local" name="endDate" value="${endDate}"><br>
-  Service Name<input type="text" name="serviceName" value="${serviceName}"><br>
+  Service Name: <input type="text" name="serviceName" value="${serviceName}"><br>
   Level: <input type="text" name="level" value="${level}"><br>
   Trace ID: <input type="text" name="traceId" value="${traceId}"><br>
   Class Name: <input type="text" name="className" value="${className}"><br>
   Message: <input type="text" name="message" value="${message}"><br>
   Page Number: <input type="number" name="pageNumber" value="${empty pageNumber ? 0 : pageNumber}" min="0"><br>
   Page Size: <input type="number" name="pageSize" value="${empty pageSize ? 50 : pageSize}" min="1"><br>
+  Sort Order:
+  <select name="sortOrder">
+    <option value="asc" ${"asc".equals(sortOrder) ? "selected" : ""}>Ascending</option>
+    <option value="desc" ${"desc".equals(sortOrder) ? "selected" : ""}>Descending</option>
+  </select><br>
   <input type="submit" value="Search">
+  <input type="button" value="Reset" onclick="resetForm()">
 </form>
 
 <h2>Search Results</h2>
@@ -50,5 +56,10 @@
   <p>Total pages: ${results.totalPages}</p>
   <p>Total elements: ${results.totalElements}</p>
 </c:if>
+<script>
+  function resetForm() {
+    window.location.href = '${pageContext.request.contextPath}/search';
+  }
+</script>
 </body>
 </html>
