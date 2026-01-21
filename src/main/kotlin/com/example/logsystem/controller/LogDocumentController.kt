@@ -10,7 +10,7 @@ import java.time.LocalDateTime
 @Controller
 class LogDocumentController(private val logDocumentService: LogDocumentService) {
 
-    @GetMapping("/search")
+    @GetMapping(value = ["/", "/index.jsp", "/search", "/search.jsp"])
     fun search(
         @RequestParam(required = false) serviceName: String?,
         @RequestParam(required = false) startDate: LocalDateTime?,
@@ -34,6 +34,6 @@ class LogDocumentController(private val logDocumentService: LogDocumentService) 
         model.addAttribute("message", message)
         model.addAttribute("pageNumber", pageNumber)
         model.addAttribute("pageSize", pageSize)
-        return "search.jsp"
+        return "index.jsp"
     }
 }
