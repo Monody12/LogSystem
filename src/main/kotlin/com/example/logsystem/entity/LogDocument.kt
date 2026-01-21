@@ -36,7 +36,7 @@ data class LogDocument(
     val id: String? = null,
     @Field(name = "@version", type = FieldType.Keyword)
     val version: String? = null,
-    @Field(name = "class",type = FieldType.Text, analyzer = "ik_max_word")
+    @Field(name = "class",type = FieldType.Text, analyzer = "standard")
     val class_: String? = null,
     @Field(type = FieldType.Keyword)
     val pid: String? = null,

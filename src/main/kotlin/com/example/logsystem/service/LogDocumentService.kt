@@ -50,7 +50,8 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         }
 
         if (!className.isNullOrBlank()) {
-            qb.must(QueryBuilders.matchQuery("class", className).fuzziness(Fuzziness.AUTO))
+//            qb.must(QueryBuilders.matchQuery("class", className).fuzziness(Fuzziness.AUTO))
+            qb.must(QueryBuilders.matchQuery("class", className))
         }
 
         if (!message.isNullOrBlank()) {
