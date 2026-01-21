@@ -38,7 +38,8 @@ class LogDocumentService(private val repository: LogDocumentRepository, private 
         }
 
         if (startDate != null && endDate != null) {
-            qb.must(QueryBuilders.rangeQuery("timestamp").gte(startDate).lte(endDate))
+//            qb.must(QueryBuilders.rangeQuery("timestamp").gte(startDate).lte(endDate))
+            qb.must(QueryBuilders.rangeQuery("@timestamp").gte(startDate).lte(endDate))
         }
 
         if (!level.isNullOrBlank()) {
