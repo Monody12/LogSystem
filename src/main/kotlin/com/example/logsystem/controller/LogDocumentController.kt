@@ -34,6 +34,6 @@ class LogDocumentController(private val logDocumentService: LogDocumentService) 
         model.addAttribute("message", message)
         model.addAttribute("pageNumber", pageNumber)
         model.addAttribute("pageSize", pageSize)
-        return "index.jsp"
+        return "index"
     }
 }
