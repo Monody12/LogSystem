@@ -12,7 +12,7 @@
   <title>Log Search</title>
 </head>
 <body>
-<form method="get" action="${pageContext.request.contextPath}/index.jsp">
+<form method="get" action="${pageContext.request.contextPath}">
   Start Date: <input type="datetime-local" name="startDate" value="${startDate}"><br>
   End Date: <input type="datetime-local" name="endDate" value="${endDate}"><br>
   Level: <input type="text" name="level" value="${level}"><br>
